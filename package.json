@@ -1,0 +1,23 @@
+{
+  "name": "md-to-epub-converter",
+  "version": "1.0.0",
+  "description": "Convert multiple markdown files to a single HTML/EPUB file",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "convert": "node index.js",
+    "to-epub": "node simple-epub-converter.js"
+  },
+  "keywords": ["markdown", "epub", "html", "converter", "nodejs"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "marked": "^9.1.6",
+    "fs-extra": "^11.1.1",
+    "path": "^0.12.7",
+    "glob": "^10.3.10",
+    "epub-gen": "^0.1.0",
+    "jsdom": "^23.0.0",
+    "mime-types": "^2.1.35"
+  }
+} 
