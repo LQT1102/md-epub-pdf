@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công cụ chuyển đổi Markdown sang HTML/EPUB</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="py-5 text-center">
+            <h1 class="display-4">Công cụ chuyển đổi Markdown sang HTML/EPUB</h1>
+            <p class="lead">Chuyển đổi các file Markdown thành HTML và EPUB đẹp mắt.</p>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0"><i class="bi bi-markdown-fill me-2"></i>File Markdown</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="markdown-files-container">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <p class="text-muted small">Đặt các file .md trong thư mục <code>markdown/</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="h5 mb-0"><i class="bi bi-filetype-html me-2"></i>File HTML</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="html-files-container">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <p class="text-muted small">File HTML được tạo ra sẽ hiển thị ở đây</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="h5 mb-0"><i class="bi bi-book-fill me-2"></i>File EPUB</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="epub-files-container">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-info" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <p class="text-muted small">File EPUB được tạo ra sẽ hiển thị ở đây</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h2 class="h5 mb-0"><i class="bi bi-gear-fill me-2"></i>Cấu hình chuyển đổi</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="conversion-form">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Tiêu đề sách</label>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="Nhập tiêu đề sách">
+                            </div>
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Tác giả</label>
+                                <input type="text" class="form-control" id="author" name="author" placeholder="Nhập tên tác giả">
+                            </div>
+                            <div class="mb-3">
+                                <label for="publisher" class="form-label">Nhà xuất bản</label>
+                                <input type="text" class="form-control" id="publisher" name="publisher" placeholder="Nhập tên nhà xuất bản">
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="button" id="convert-to-html-btn" class="btn btn-primary">
+                                    <i class="bi bi-filetype-html me-2"></i>Chuyển đổi Markdown sang HTML
+                                </button>
+                                <button type="button" id="convert-to-epub-btn" class="btn btn-success">
+                                    <i class="bi bi-book-fill me-2"></i>Chuyển đổi HTML sang EPUB
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khu vực thông báo -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto" id="toast-title">Thông báo</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Đóng"></button>
+                </div>
+                <div class="toast-body" id="toast-message">
+                    
+                </div>
+            </div>
+        </div>
+
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2025 Công cụ Markdown sang HTML/EPUB</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

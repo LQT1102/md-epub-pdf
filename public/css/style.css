@@ -1,0 +1,123 @@
+/* Trang chủ MD-to-EPUB Converter */
+:root {
+    --primary-color: #3498db;
+    --success-color: #2ecc71;
+    --info-color: #5bc0de;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+}
+
+body {
+    background-color: var(--light-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 60px;
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+.card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+.file-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+.file-item .actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-message {
+    color: #6c757d;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.bi {
+    margin-right: 0.25rem;
+}
+
+.btn-download {
+    color: var(--primary-color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-download:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.toast {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+#convert-to-html-btn, #convert-to-epub-btn {
+    font-weight: 500;
+    padding: 0.75rem;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+/* Hiệu ứng loading */
+.loading {
+    position: relative;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: calc(50% - 0.75rem);
+    left: calc(50% - 0.75rem);
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
