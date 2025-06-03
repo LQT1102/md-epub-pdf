@@ -1,192 +1,103 @@
-# Markdown to EPUB Converter
+# Công Cụ Chuyển Đổi Markdown sang HTML/EPUB
 
-Công cụ Node.js để convert nhiều file markdown thành một file HTML hoặc EPUB.
+Công cụ này giúp chuyển đổi nhiều file Markdown thành một file HTML hoặc EPUB đẹp mắt, phù hợp cho việc tạo sách điện tử, tài liệu kỹ thuật và tài liệu hướng dẫn.
 
-## Tính năng
+## Tính Năng
 
-- ✅ Convert nhiều file `.md` thành một file HTML tổng hợp
-- ✅ Hỗ trợ GitHub Flavored Markdown (GFM)
-- ✅ Tự động tạo mục lục (Table of Contents)
-- ✅ Styling đẹp mắt với CSS tùy chỉnh
-- ✅ Tương thích với Windows, macOS, Linux
-- ✅ Hướng dẫn convert HTML thành EPUB
+- ✅ Chuyển đổi nhiều file Markdown thành một file HTML tổng hợp
+- ✅ Chuyển đổi HTML thành file EPUB chuẩn
+- ✅ Tự động tạo mục lục
+- ✅ Hỗ trợ hình ảnh (tự động nhúng dưới dạng base64)
+- ✅ Tùy chỉnh CSS để tạo phong cách sách điện tử đẹp mắt
+- ✅ Tự động xử lý các liên kết nội bộ
 
-## Cài đặt
+## Cài Đặt
 
-1. **Clone hoặc tải về dự án**
 ```bash
-git clone <repository-url>
-cd md-epub-pdf
-```
+# Sao chép mã nguồn
+git clone https://github.com/your-username/md-to-epub-converter.git
+cd md-to-epub-converter
 
-2. **Cài đặt dependencies**
-```bash
+# Cài đặt các gói phụ thuộc
 npm install
-# hoặc
-pnpm install
 ```
 
-## Sử dụng
+## Cấu Trúc Dự Án
 
-### Cách 1: Sử dụng mặc định
-
-1. **Đặt các file markdown vào thư mục `markdown/`**
 ```
-markdown/
-├── 01-gioi-thieu.md
-├── 02-noi-dung.md
-├── 03-ket-luan.md
-└── ...
-```
-
-2. **Chạy converter**
-```bash
-npm start
-# hoặc
-node index.js
+.
+├── markdown/            # Thư mục chứa các file markdown đầu vào
+├── output/              # Thư mục chứa các file đầu ra (HTML, EPUB)
+├── md-to-html.js        # Script chuyển đổi Markdown sang HTML
+├── html-to-epub.js      # Script chuyển đổi HTML sang EPUB
+├── metadata.js          # Thông tin metadata cho sách
+├── package.json         # Cấu hình dự án và dependencies
+└── README.md            # Tệp hướng dẫn này
 ```
 
-3. **Kiểm tra kết quả trong thư mục `output/`**
+## Cách Sử Dụng
 
-### Cách 2: Tùy chỉnh cấu hình
+### Bước 1: Chuẩn Bị File Markdown
+
+Đặt tất cả các file Markdown (.md) của bạn vào thư mục `markdown/`. Các file sẽ được xử lý theo thứ tự alphabet, vì vậy bạn nên đặt tên file theo thứ tự mong muốn (ví dụ: 01-introduction.md, 02-chapter1.md, ...).
+
+### Bước 2: Cấu Hình Metadata
+
+Chỉnh sửa file `metadata.js` để cấu hình thông tin cho sách của bạn:
 
 ```javascript
-const MarkdownToEpubConverter = require('./index.js');
-
-const converter = new MarkdownToEpubConverter({
-  inputDir: './your-markdown-folder',    // Thư mục chứa file markdown
-  outputDir: './your-output-folder',     // Thư mục output
-  title: 'Tên sách của bạn',             // Tiêu đề sách
-  author: 'Tên tác giả',                 // Tên tác giả
-  publisher: 'Nhà xuất bản'              // Nhà xuất bản
-});
-
-converter.convertToEpub().then(result => {
-  if (result) {
-    console.log('✅ Thành công:', result);
-  } else {
-    console.log('❌ Thất bại');
-  }
-});
+export default {
+  title: "Tiêu đề sách của bạn",
+  author: "Tên tác giả",
+  publisher: "Nhà xuất bản",
+  cover: "đường dẫn đến file ảnh bìa" // tùy chọn
+};
 ```
 
-## Convert HTML thành EPUB
+### Bước 3: Chuyển Đổi Markdown sang HTML
 
-Sau khi có file HTML, bạn có thể convert thành EPUB bằng các cách sau:
-
-### 1. Sử dụng Calibre (Khuyến nghị)
-
-1. Tải và cài đặt [Calibre](https://calibre-ebook.com/)
-2. Mở Calibre
-3. Click "Add books" và chọn file HTML
-4. Click "Convert books"
-5. Chọn "Output format" là EPUB
-6. Click "OK"
-
-### 2. Sử dụng công cụ online
-
-- [CloudConvert](https://cloudconvert.com/html-to-epub)
-- [Zamzar](https://www.zamzar.com/convert/html-to-epub/)
-- [Online-Convert](https://www.online-convert.com/)
-
-### 3. Sử dụng Pandoc
+Chạy lệnh sau để chuyển đổi các file Markdown thành một file HTML tổng hợp:
 
 ```bash
-# Cài đặt Pandoc
-# Windows: choco install pandoc
-# macOS: brew install pandoc
-# Ubuntu: sudo apt install pandoc
-
-# Convert HTML thành EPUB
-pandoc input.html -o output.epub
+npm run html
 ```
 
-## Cấu trúc dự án
+File HTML sẽ được tạo trong thư mục `output/` với tên dựa trên tiêu đề sách đã cấu hình.
 
-```
-md-epub-pdf/
-├── markdown/           # Thư mục chứa file markdown
-│   ├── 01-chapter1.md
-│   ├── 02-chapter2.md
-│   └── ...
-├── output/             # Thư mục output
-│   └── book.html
-├── index.js            # Script chính
-├── package.json        # Dependencies
-└── README.md           # File này
+### Bước 4: Chuyển Đổi HTML sang EPUB
+
+Sau khi đã có file HTML, chạy lệnh sau để chuyển đổi thành EPUB:
+
+```bash
+npm run epub
 ```
 
-## Tùy chỉnh CSS
+File EPUB sẽ được tạo trong thư mục `output/` với cùng tên file như HTML.
 
-Bạn có thể tùy chỉnh giao diện bằng cách sửa method `getDefaultCSS()` trong file `index.js`:
+## Tùy Chỉnh Giao Diện
 
-```javascript
-getDefaultCSS() {
-  return `
-    body {
-      font-family: 'Times New Roman', serif;
-      line-height: 1.8;
-      color: #000;
-    }
-    h1 {
-      color: #2c3e50;
-      border-bottom: 3px solid #e74c3c;
-    }
-    // ... thêm CSS tùy chỉnh
-  `;
-}
-```
+Bạn có thể tùy chỉnh giao diện của sách bằng cách chỉnh sửa CSS trong phương thức `getDefaultCSS()` trong file `md-to-html.js`.
 
-## Supported Markdown Features
+## Lưu Ý
 
-- ✅ Headers (H1-H6)
-- ✅ Bold, Italic text
-- ✅ Lists (ordered, unordered)
-- ✅ Links
-- ✅ Images
-- ✅ Code blocks với syntax highlighting
-- ✅ Tables
-- ✅ Blockquotes
-- ✅ Line breaks
-- ✅ GitHub Flavored Markdown (GFM)
+- Hình ảnh trong Markdown phải sử dụng đường dẫn tương đối với thư mục chứa file Markdown
+- Công cụ tự động nhúng hình ảnh dưới dạng base64, vì vậy file EPUB đầu ra sẽ chứa tất cả hình ảnh mà không cần file riêng biệt
+- Để có kết quả tốt nhất, hãy sử dụng cú pháp Markdown chuẩn
 
-## Troubleshooting
+## Xử Lý Sự Cố
 
-### Không tìm thấy file markdown
-- Kiểm tra đường dẫn thư mục `markdown/`
-- Đảm bảo file có extension `.md`
-- Kiểm tra quyền đọc file
+### Lỗi: Không tìm thấy file HTML
 
-### Lỗi khi convert
-- Kiểm tra syntax markdown trong file
-- Đảm bảo file không bị corrupted
-- Kiểm tra dung lượng file (file quá lớn có thể gây lỗi)
+Nếu bạn gặp lỗi khi chạy `npm run epub`, hãy đảm bảo bạn đã chạy `npm run html` trước để tạo file HTML.
 
-### File HTML không hiển thị đúng
-- Kiểm tra encoding UTF-8
-- Mở file bằng trình duyệt hiện đại
-- Kiểm tra CSS trong file
+### Lỗi: Markdown không được xử lý đúng cách
 
-## Requirements
+Đảm bảo rằng các file Markdown của bạn tuân theo cú pháp Markdown chuẩn. Kiểm tra định dạng tiêu đề, danh sách, và các phần tử khác.
 
-- Node.js >= 14.0.0
-- npm hoặc pnpm
+## Giấy Phép
 
-## Dependencies
-
-- `marked`: Parse markdown thành HTML
-- `fs-extra`: File system operations
-- `glob`: Pattern matching cho file
-- `path`: Path utilities
-
-## License
-
-MIT License
-
-## Contributing
-
-Mọi đóng góp đều được chào đón! Hãy tạo issue hoặc pull request.
+Dự án này được phân phối dưới Giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
 
 ---
 
-**Lưu ý:** Tool này tạo file HTML tổng hợp. Để có file EPUB thực sự, bạn cần sử dụng thêm công cụ convert như Calibre hoặc Pandoc. 
+Tạo bởi [Tên của bạn] với ❤️

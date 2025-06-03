@@ -1,17 +1,18 @@
-const fs = require('fs-extra');
-const path = require('path');
-const { globSync } = require('glob');
-const { marked } = require('marked');
-const mime = require('mime-types');
-const { JSDOM } = require('jsdom');
+import fs from 'fs-extra';
+import path from 'path';
+import { globSync } from 'glob';
+import { marked } from 'marked';
+import mime from 'mime-types';
+import { JSDOM } from 'jsdom';
+import metadata from './metadata.js';
 
 class MarkdownToEpubConverter {
   constructor(options = {}) {
     this.inputDir = options.inputDir || './markdown';
     this.outputDir = options.outputDir || './output';
-    this.epubTitle = options.title || 'Tập hợp tài liệu Markdown';
-    this.author = options.author || 'Tác giả không xác định';
-    this.publisher = options.publisher || 'Self Published';
+    this.epubTitle = metadata.title;
+    this.author = metadata.author;
+    this.publisher = metadata.publisher;
     this.cover = options.cover || null;
     this.css = options.css || this.getDefaultCSS();
   }
@@ -353,12 +354,21 @@ class MarkdownToEpubConverter {
 
   async readMarkdownFile(filePath) {
     try {
+      // Đọc toàn bộ nội dung file
       const content = await fs.readFile(filePath, 'utf8');
       const fileName = path.basename(filePath, '.md');
+      
+      // Kiểm tra nội dung file
+      if (!content || content.trim().length === 0) {
+        console.warn(`⚠️  File ${filePath} trống hoặc chỉ chứa khoảng trắng`);
+      } else {
+        console.log(`✅ Đã đọc file ${fileName} (${content.length} ký tự)`);
+      }
+      
       return {
         fileName,
         filePath,
-        content
+        content: content || '' // Đảm bảo content không bao giờ là null
       };
     } catch (error) {
       console.error(`❌ Lỗi khi đọc file ${filePath}: ${error.message}`);
@@ -416,21 +426,63 @@ class MarkdownToEpubConverter {
           
           // Convert to base64 and embed directly in HTML
           const base64Data = imageData.toString('base64');
-          const dataUrl = `data:${mimeType};base64,${base64Data}`;
+          // Không log dữ liệu base64 ra console
+          const dataUrl = `data:${mimeType};base64,[BASE64_DATA_HIDDEN]`;
           
           // Update src in HTML to use base64 data URL
-          img.setAttribute('src', dataUrl);
+          img.setAttribute('src', `data:${mimeType};base64,${base64Data}`);
           processedImageCount++;
           
           console.log(`   ✅ Đã embed hình ảnh: ${path.basename(imagePath)} (${(imageData.length/1024).toFixed(1)} KB)`);
         } else {
           console.log(`   ⚠️  Không tìm thấy hình ảnh: ${src}`);
-          // Keep the original src but add a note
-          img.setAttribute('alt', `Image not found: ${src}`);
+          
+          // Tạo thẻ div thông báo lỗi thay thế thẻ img
+          const errorDiv = dom.window.document.createElement('div');
+          errorDiv.className = 'image-error';
+          errorDiv.style.border = '1px solid #ff6b6b';
+          errorDiv.style.backgroundColor = '#ffe8e8';
+          errorDiv.style.padding = '10px';
+          errorDiv.style.textAlign = 'center';
+          errorDiv.style.margin = '10px 0';
+          errorDiv.style.borderRadius = '4px';
+          errorDiv.style.fontFamily = 'Arial, sans-serif';
+          
+          // Thêm biểu tượng "X" và thông báo
+          errorDiv.innerHTML = `
+            <div style="font-size: 24px; color: #ff6b6b; font-weight: bold;">X</div>
+            <div style="margin-top: 5px; font-size: 14px; color: #555;">
+              Hình ảnh không tìm thấy: ${src}
+            </div>
+          `;
+          
+          // Thay thế thẻ img bằng thẻ div
+          img.parentNode.replaceChild(errorDiv, img);
         }
       } catch (error) {
         console.error(`   ❌ Lỗi xử lý hình ảnh ${src}: ${error.message}`);
-        img.setAttribute('alt', `Error loading image: ${src}`);
+        
+        // Tạo thẻ div thông báo lỗi thay thế thẻ img
+        const errorDiv = dom.window.document.createElement('div');
+        errorDiv.className = 'image-error';
+        errorDiv.style.border = '1px solid #ff6b6b';
+        errorDiv.style.backgroundColor = '#ffe8e8';
+        errorDiv.style.padding = '10px';
+        errorDiv.style.textAlign = 'center';
+        errorDiv.style.margin = '10px 0';
+        errorDiv.style.borderRadius = '4px';
+        errorDiv.style.fontFamily = 'Arial, sans-serif';
+        
+        // Thêm biểu tượng "X" và thông báo lỗi
+        errorDiv.innerHTML = `
+          <div style="font-size: 24px; color: #ff6b6b; font-weight: bold;">X</div>
+          <div style="margin-top: 5px; font-size: 14px; color: #555;">
+            Lỗi xử lý hình ảnh: ${error.message}
+          </div>
+        `;
+        
+        // Thay thế thẻ img bằng thẻ div
+        img.parentNode.replaceChild(errorDiv, img);
       }
     }
     
@@ -442,14 +494,24 @@ class MarkdownToEpubConverter {
   }
 
   markdownToHtml(markdown) {
-    // Cấu hình marked để xử lý markdown
+    // Cấu hình marked để xử lý markdown đầy đủ hơn
     marked.setOptions({
-      breaks: true,
-      gfm: true, // GitHub Flavored Markdown
-      sanitize: false
+      breaks: true,           // Chuyển đổi line breaks thành <br>
+      gfm: true,             // GitHub Flavored Markdown
+      headerIds: true,       // Tạo id cho các tiêu đề
+      mangle: false,         // Không mã hóa các ký tự đặc biệt trong header ids
+      sanitize: false,       // Không loại bỏ HTML
+      smartLists: true,      // Danh sách thông minh
+      smartypants: true,     // Chuyển đổi dấu ngoặc kép, dấu ba chấm, etc.
+      xhtml: true,           // Tự đóng các thẻ rỗng theo chuẩn XHTML
+      pedantic: false        // Không tuân theo nghiêm ngặt spec gốc của markdown
     });
 
-    return marked(markdown);
+    console.log(`📝 Xử lý nội dung markdown (${markdown.length} ký tự)`);
+    const result = marked(markdown);
+    console.log(`📝 Đã chuyển đổi thành HTML (${result.length} ký tự)`);
+    
+    return result;
   }
 
   async createChapterFromMarkdown(markdownData) {
@@ -499,7 +561,7 @@ class MarkdownToEpubConverter {
         markdownContents
           .filter(content => content !== null)
           .map(async (content, index) => {
-            console.log(`🔄 Processing ${content.fileName}...`);
+            console.log(`🔄 Processing ${content.fileName}...`);  
             try {
               const chapter = await this.createChapterFromMarkdown(content);
               console.log(`✅ Created chapter: ${chapter ? chapter.title : 'null'}`);
@@ -522,6 +584,7 @@ class MarkdownToEpubConverter {
 
       // Tạo file HTML tổng hợp thay vì EPUB
       console.log('📝 Đang tạo file HTML tổng hợp...');
+      console.log(`📝 Tạo file HTML: ${this.epubTitle}`);
       const htmlOutputPath = path.join(this.outputDir, `${this.epubTitle.replace(/[^a-zA-Z0-9]/g, '_')}.html`);
       
       const htmlContent = `
@@ -595,7 +658,7 @@ async function main() {
   const converter = new MarkdownToEpubConverter({
     inputDir: './markdown',           // Thư mục chứa file markdown
     outputDir: './output',            // Thư mục output
-    title: 'Clean Code - Tập hợp tài liệu',
+    title: 'Clean Code',
     author: 'Robert C. Martin',
     publisher: 'Self Published'
   });
@@ -613,8 +676,8 @@ async function main() {
 }
 
 // Chạy nếu file này được execute trực tiếp
-if (require.main === module) {
+if (import.meta.url === new URL(import.meta.url).href) {
   main().catch(console.error);
 }
 
-module.exports = MarkdownToEpubConverter;
+export default MarkdownToEpubConverter;

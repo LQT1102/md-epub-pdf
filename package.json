@@ -5,19 +5,28 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "convert": "node index.js",
-    "to-epub": "node simple-epub-converter.js"
+    "html": "node md-to-html.js",
+    "epub": "node html-to-epub.js"
   },
-  "keywords": ["markdown", "epub", "html", "converter", "nodejs"],
+  "type": "module",
+  "keywords": [
+    "markdown",
+    "epub",
+    "html",
+    "converter",
+    "nodejs"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "marked": "^9.1.6",
+    "@lesjoursfr/html-to-epub": "^4.5.1",
     "fs-extra": "^11.1.1",
-    "path": "^0.12.7",
     "glob": "^10.3.10",
-    "epub-gen": "^0.1.0",
     "jsdom": "^23.0.0",
-    "mime-types": "^2.1.35"
+    "marked": "^9.1.6",
+    "mime-types": "^2.1.35",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
   }
-} 
+}
